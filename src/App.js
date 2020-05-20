@@ -6,7 +6,7 @@ import Header from './Components/header/header';
 import HomePage from './Pages/homepage/homepage';
 import ShopPage from './Pages/shop/shop';
 import SignInAndSignUpPage from './Pages/sign-in-sign-up/sign-in-sign-up';
-import { auth } from './firebase/firbase.utils';
+import { auth, createUserProfileDocument } from './firebase/firbase.utils';
 
 class App extends React.Component {
   constructor() {
@@ -20,10 +20,21 @@ class App extends React.Component {
   unsubscribeFromAuth = null;
 
   componentDidMount() {
-    this.unsubscribeFromAuth = auth.onAuthStateChanged((user) => {
-      this.setState({ currentUser: user });
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
 
-      console.log(user);
+        userRef.onSnapshot((snapshot) => {
+          this.setState({
+            currentUser: {
+              id: snapshot.id,
+              ...snapshot.data(),
+            },
+          });
+        });
+      }
+
+      this.setState({ currentUser: userAuth });
     });
   }
 
