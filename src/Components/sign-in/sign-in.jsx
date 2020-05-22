@@ -27,7 +27,7 @@ export default class SignIn extends Component {
 
     try {
       auth.signInWithEmailAndPassword(email, password);
-      this.setState({ email: '', password: '' });
+      this.setState({ email: '', password: 'np' });
     } catch (error) {
       console.error(error);
     }
